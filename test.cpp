@@ -61,12 +61,17 @@ void hmac_example()
 /* demonstrates AES in counter mode */
 void ctr_example()
 {
-	unsigned char key[256];
+	unsigned char aes_key[256];
 	size_t i;
 	// needs to be iv and key must be random(use NTL random)
 	/* setup dummy (non-random) key and IV */
-	for (i = 0; i < 256; i++) key[i] = i;
-	// cout << "Key: " << key << endl;
+	for (i = 0; i < 256; i++) 
+	{
+		size_t rng = RandomBnd(93) + 33;
+		aes_key[i] = rng;
+		// cout << "Random #: " << key[i] << endl;
+	};
+	// cout << "Key: " << aes_key << endl;
 	unsigned char iv[128];
 	// generate 16 byte IV
 	for (i = 0; i < 128; i++)
@@ -91,7 +96,7 @@ void ctr_example()
 	size_t len = message.length();
 	/* encrypt: */
 	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-	if (1!=EVP_EncryptInit_ex(ctx,EVP_aes_256_ctr(),0,key,iv))
+	if (1!=EVP_EncryptInit_ex(ctx,EVP_aes_256_ctr(),0,aes_key,iv))
 		ERR_print_errors_fp(stderr);
 	int nWritten; /* stores number of written bytes (size of ciphertext) */
 	if (1!=EVP_EncryptUpdate(ctx,ct,&nWritten,(unsigned char*)message_array,len))
@@ -111,7 +116,7 @@ void ctr_example()
 	/* wipe out plaintext to be sure it worked: */
 	memset(pt,0,512);
 	ctx = EVP_CIPHER_CTX_new();
-	if (1!=EVP_DecryptInit_ex(ctx,EVP_aes_256_ctr(),0,key,iv))
+	if (1!=EVP_DecryptInit_ex(ctx,EVP_aes_256_ctr(),0,aes_key,iv))
 		ERR_print_errors_fp(stderr);
 	if (1!=EVP_DecryptUpdate(ctx,pt,&nWritten,ct,ctLen))
 		ERR_print_errors_fp(stderr);

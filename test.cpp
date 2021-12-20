@@ -61,13 +61,21 @@ void hmac_example()
 /* demonstrates AES in counter mode */
 void ctr_example()
 {
-	unsigned char key[32];
+	unsigned char key[256];
 	size_t i;
 	// needs to be iv and key must be random(use NTL random)
 	/* setup dummy (non-random) key and IV */
-	for (i = 0; i < 32; i++) key[i] = i;
-	unsigned char iv[16];
-	for (i = 0; i < 16; i++) iv[i] = i;
+	for (i = 0; i < 256; i++) key[i] = i;
+	// cout << "Key: " << key << endl;
+	unsigned char iv[128];
+	// generate 16 byte IV
+	for (i = 0; i < 128; i++)
+	{
+		size_t rng = RandomBnd(93) + 33;
+		iv[i] = rng;
+		// cout << "Random #: " << iv[i] << endl;
+	}
+	// cout << "16 byte IV: " << iv << endl;
 	/* NOTE: in general you need t compute the sizes of these
 	 * buffers.  512 is an arbitrary value larger than what we
 	 * will need for our short message. */
@@ -111,29 +119,17 @@ void ctr_example()
 	/* NOTE: counter mode will preserve the length (although the person
 	 * decrypting needs to know the IV) */
 }
-/* you can (and should!) use something like this to initialize
- * the state of NTL's internal random number generator.  Also
- * note that unlike the rand() function from libc, NTL random
- * values are of cryptographic quality. */
-void initNTLRandom()
-{
-	FILE* frand = fopen("/dev/urandom","rb");
-	unsigned char seed[32];
-	fread(seed,1,32,frand);
-	fclose(frand);
-	SetSeed(seed,32);
-}
+
 int main()
 {
-	initNTLRandom();
-	ZZ x;
-	x = RandomBnd(100);
-	cout << x << endl;
-	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	// ZZ x;
+	// x = RandomBits_ZZ(128);
+	// cout << x << endl;
+	// printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
 	ctr_example();
-	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
-	sha_example();
-	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
-	hmac_example();
+	// printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	// sha_example();
+	// printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	// hmac_example();
 	return 0;
 }

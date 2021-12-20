@@ -2,7 +2,7 @@
  * NTL
  * OpenSSL
  * Terminal command using the 2 libraries:
- * g++ -g -O2 -std=c++11 -pthread -march=native test.cpp -o test -lntl -lgmp -lm -L/usr/local/lib/ -lssl -lcrypto
+ * g++ -g -O2 -std=c++11 -pthread -march=native foo.cpp -o foo -lntl -lgmp -lm -L/usr/local/lib/ -lssl -lcrypto
  *
  * This is the c++ version of the examples.c
  */
@@ -111,15 +111,29 @@ void ctr_example()
 	/* NOTE: counter mode will preserve the length (although the person
 	 * decrypting needs to know the IV) */
 }
-
+/* you can (and should!) use something like this to initialize
+ * the state of NTL's internal random number generator.  Also
+ * note that unlike the rand() function from libc, NTL random
+ * values are of cryptographic quality. */
+void initNTLRandom()
+{
+	FILE* frand = fopen("/dev/urandom","rb");
+	unsigned char seed[32];
+	fread(seed,1,32,frand);
+	fclose(frand);
+	SetSeed(seed,32);
+}
 int main()
 {
-
-  printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
-  ctr_example();
- 	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
- 	sha_example();
- 	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
- 	hmac_example();
-  return 0;
+	initNTLRandom();
+	ZZ x;
+	x = RandomBnd(100);
+	cout << x << endl;
+	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	ctr_example();
+	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	sha_example();
+	printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
+	hmac_example();
+	return 0;
 }

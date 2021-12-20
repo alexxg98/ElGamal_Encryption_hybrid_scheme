@@ -24,14 +24,14 @@ using namespace NTL;
 
 void sha_example()
 {
-  /* hash a string with sha256 */
-  // need a more efficient way of converting string to char* (c equivalent?)
+	/* hash a string with sha256 */
+	// need a more efficient way of converting string to char* (c equivalent?)
 	string message = "this is a test message :D";
-  char message_array[message.length() + 1];
-  strcpy(message_array, message.c_str());
+	char message_array[message.length() + 1];
+	strcpy(message_array, message.c_str());
 
 	unsigned char hash[32];
-  SHA256((unsigned char*)message_array,message.length(),hash);
+	SHA256((unsigned char*)message_array,message.length(),hash);
 	for (size_t i = 0; i < 32; i++) {
 		printf("%02x",hash[i]);
 	}
@@ -41,14 +41,14 @@ void sha_example()
 void hmac_example()
 {
 	string hmackey = "asdfasdfasdfasdfasdfasdf";
-  char hmackey_array[hmackey.length() + 1];
-  strcpy(hmackey_array, hmackey.c_str());
+	char hmackey_array[hmackey.length() + 1];
+	strcpy(hmackey_array, hmackey.c_str());
 
 	unsigned char mac[64]; /* if using sha512 */
 	memset(mac,0,64);
-  string message = "this is a test message :D";
-  char message_array[message.length() + 1];
-  strcpy(message_array, message.c_str());
+  	string message = "this is a test message :D";
+  	char message_array[message.length() + 1];
+  	strcpy(message_array, message.c_str());
 	HMAC(EVP_sha512(),hmackey_array,hmackey.length(),(unsigned char*)message_array,
 			message.length(),mac,0);
 	printf("hmac-512(\"%s\"):\n",message_array);
@@ -64,7 +64,6 @@ void ctr_example()
 	unsigned char aes_key[256];
 	size_t i;
 	// needs to be iv and key must be random(use NTL random)
-	/* setup dummy (non-random) key and IV */
 	for (i = 0; i < 256; i++) 
 	{
 		size_t rng = RandomBnd(93) + 33;
@@ -90,8 +89,8 @@ void ctr_example()
 	memset(ct,0,512);
 	memset(pt,0,512);
 	string message = "THIS IS A TEST FOR AES!";
-  char message_array[message.length() + 1];
-  strcpy(message_array, message.c_str());
+  	char message_array[message.length() + 1];
+ 	 strcpy(message_array, message.c_str());
 
 	size_t len = message.length();
 	/* encrypt: */

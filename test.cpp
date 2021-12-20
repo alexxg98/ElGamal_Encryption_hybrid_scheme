@@ -69,7 +69,7 @@ void ctr_example()
 	{
 		size_t rng = RandomBnd(93) + 33; // From ASCII table, usable chars are from dec 33 - 126
 		aes_key[i] = rng;
-		cout << "Random #: " << aes_key[i] << endl;
+		// cout << aes_key[i];
 	};
 	// cout << "Key: " << aes_key << endl;
 	unsigned char iv[16];
@@ -78,7 +78,7 @@ void ctr_example()
 	{
 		size_t rng = RandomBnd(93) + 33;
 		iv[i] = rng;
-		// cout << "Random #: " << iv[i] << endl;
+		// cout <<  iv[i];
 	}
 	// cout << "16 byte IV: " << iv << endl;
 	/* NOTE: in general you need t compute the sizes of these
@@ -103,7 +103,7 @@ void ctr_example()
 		ERR_print_errors_fp(stderr);
 	EVP_CIPHER_CTX_free(ctx);
 	size_t ctLen = nWritten;
-	printf("ciphertext of length %i:\n",nWritten);
+	printf("\nciphertext of length %i:\n",nWritten);
 	for (i = 0; i < ctLen; i++) {
 		printf("%02x",ct[i]);
 	}

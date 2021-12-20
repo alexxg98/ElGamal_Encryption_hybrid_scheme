@@ -37,6 +37,7 @@ void sha_example()
 	}
 	printf("\n");
 }
+
 /* demonstrates HMAC */
 void hmac_example()
 {
@@ -61,19 +62,19 @@ void hmac_example()
 /* demonstrates AES in counter mode */
 void ctr_example()
 {
-	unsigned char aes_key[256]; // 256 bits long
+	unsigned char aes_key[32]; // aes_key is 32 bytes
 	size_t i;
 	// needs to be iv and key must be random(use NTL random)
-	for (i = 0; i < 256; i++) 
+	for (i = 0; i < 32; i++)
 	{
 		size_t rng = RandomBnd(93) + 33; // From ASCII table, usable chars are from dec 33 - 126
 		aes_key[i] = rng;
-		// cout << "Random #: " << key[i] << endl;
+		cout << "Random #: " << aes_key[i] << endl;
 	};
 	// cout << "Key: " << aes_key << endl;
-	unsigned char iv[128];
+	unsigned char iv[16];
 	// generate 16 byte IV
-	for (i = 0; i < 128; i++)
+	for (i = 0; i < 16; i++)
 	{
 		size_t rng = RandomBnd(93) + 33;
 		iv[i] = rng;
@@ -126,10 +127,6 @@ void ctr_example()
 
 int main()
 {
-	// ZZ x;
-	// x = RandomBits_ZZ(128);
-	// cout << x << endl;
-	// printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
 	ctr_example();
 	// printf("~~~~~~~~~~~~~~~~~~~~~~~\n");
 	// sha_example();

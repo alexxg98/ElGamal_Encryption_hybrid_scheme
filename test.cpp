@@ -61,12 +61,12 @@ void hmac_example()
 /* demonstrates AES in counter mode */
 void ctr_example()
 {
-	unsigned char aes_key[256];
+	unsigned char aes_key[256]; // 256 bits long
 	size_t i;
 	// needs to be iv and key must be random(use NTL random)
 	for (i = 0; i < 256; i++) 
 	{
-		size_t rng = RandomBnd(93) + 33;
+		size_t rng = RandomBnd(93) + 33; // From ASCII table, usable chars are from dec 33 - 126
 		aes_key[i] = rng;
 		// cout << "Random #: " << key[i] << endl;
 	};

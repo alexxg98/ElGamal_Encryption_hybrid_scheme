@@ -28,6 +28,7 @@ using namespace NTL;
 /* storage for parameters: 
  * need these parameters for El Gamal*/
 ZZ q,p,g;
+ZZ ZZ_a; // secret key
 
 /* We will be using the same readParams() provided to us from ntl-examples.cpp
  * Values are placed as before: q, p, g (in this order)
@@ -48,7 +49,10 @@ int readParams()
 
 	/* NOTE: q,p,g have been declared above at global scope*/
 
-	fin >> q >> p >> g;
+	//fin >> q >> p >> g;
+	p = 23;
+	q = 2;
+	g = 20;
 	fin.close();
 
 	/* Let's perform a quick sanity check: are values which are
@@ -160,8 +164,9 @@ void aes_decrypt(unsigned char* aes_key, unsigned char* iv, unsigned char* ct,un
 	 * decrypting needs to know the IV) */
 }
 
-unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b){
-	cout << "EL GAMAL ENCRYTING ... " << endl;
+unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b)
+{
+	cout << "EL GAMAL ENCRYPTING ... " << endl;
 
 	// Need to generate secret key random a. 
 	// SK = a in {1, ..., p-1}
@@ -173,7 +178,7 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b){
 	unsigned int p_convert;
 	p_convert = conv<uint>(p);
 	cout << "p converted = " << p_convert << endl;
-	ZZ ZZ_a = conv<ZZ>(RandomBnd(p_convert));
+	ZZ_a = conv<ZZ>(RandomBnd(p_convert));
 
 
 	// Generate Public Key
@@ -191,6 +196,17 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b){
 
 	return conv<uint>(ZZ_s);
 }
+
+unsigned int el_gamal_decrypt(unsigned int h, ZZ ZZ_B) 
+{
+	unsigned int decrypted_x;
+	ZZ ZZ_s;
+	ZZ_s = power(ZZ_B, conv<uint>(ZZ_a));
+
+	decrypted_x = h * ((1 / conv<uint>(ZZ_s)) % conv<uint>(p));	
+	return decrypted_x;
+}
+
 
 // This is just hash function SHA-256 on value x
 int h(ZZ ZZ_x){
@@ -231,6 +247,10 @@ int main()
 	cout << "E_Pk_x:" << endl;
         cout << "B = " << ZZ_B << endl;
 	cout << "s = " << E_Pk_x << endl;	
+
+	unsigned int decrypt_x;
+	decrypt_x = el_gamal_decrypt(E_Pk_x, ZZ_B);
+	cout << "Decrpyted x = " << decrypt_x << endl;
 
 	// SHA-256 hash of x
 	h(ZZ_x);

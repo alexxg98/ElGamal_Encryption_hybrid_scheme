@@ -22,6 +22,24 @@
 using namespace std;
 using namespace NTL;
 
+/* demonstrates HMAC */
+// HMAC(IV|C)
+void hmac(unsigned char* ct, int nWritten)
+{
+	string hmackey = "asdfasdfasdfasdfasdfasdf";
+	char hmackey_array[hmackey.length() + 1];
+	strcpy(hmackey_array, hmackey.c_str());
+
+	unsigned char mac[64]; /* if using sha512 */
+	memset(mac,0,64);
+	HMAC(EVP_sha512(),hmackey_array,hmackey.length(),ct,
+			nWritten,mac,0);
+	printf("hmac-512(\"%s\"):\n",ct);
+	for (size_t i = 0; i < 64; i++) {
+		printf("%02x",mac[i]);
+	}
+	printf("\n");
+}
 
 /* demonstrates AES in counter mode encryption*/
 int aes_encrypt(string message, unsigned char* aes_key, unsigned char* iv, unsigned char* ct,unsigned char* pt)
@@ -44,7 +62,7 @@ int aes_encrypt(string message, unsigned char* aes_key, unsigned char* iv, unsig
 	}
 	cout << "\nCiphertext: " << ct << endl;
 	printf("\n");
-	cout << "OG nWritten: " <<  nWritten << endl;
+	// cout << "OG nWritten: " <<  nWritten << endl;
 	return nWritten;
 
 }
@@ -100,10 +118,11 @@ int main()
 	memset(pt,0,512);
 	string message = "THIS IS A TEST FOR AES!";
 
-	// aes_encrypt(message, aes_key, iv, ct, pt);
 	int nWritten = aes_encrypt(message, aes_key, iv, ct, pt);
-	cout << "nWritten: " <<  nWritten << endl;
-	aes_decrypt(aes_key, iv, ct, pt, nWritten);
+	// cout << "nWritten: " <<  nWritten << endl;
+	// aes_decrypt(aes_key, iv, ct, pt, nWritten); // Test aes_ecrypt works
+
+	hmac(ct, nWritten);
 
 	return 0;
 }

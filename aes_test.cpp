@@ -24,7 +24,7 @@ using namespace NTL;
 
 
 /* demonstrates AES in counter mode encryption*/
-unsigned char* aes_encrypt(string message, unsigned char* aes_key, unsigned char* iv, unsigned char* ct,unsigned char* pt)
+int aes_encrypt(string message, unsigned char* aes_key, unsigned char* iv, unsigned char* ct,unsigned char* pt)
 {
 	char message_array[message.length() + 1];
 	strcpy(message_array, message.c_str());
@@ -44,29 +44,29 @@ unsigned char* aes_encrypt(string message, unsigned char* aes_key, unsigned char
 	}
 	cout << "\nCiphertext: " << ct << endl;
 	printf("\n");
-	return ct;
+	cout << "OG nWritten: " <<  nWritten << endl;
+	return nWritten;
 
 }
 /* demonstrates AES in counter mode decryption*/
-// void aes_decrypt(unsigned char* aes_key, unsigned char* iv, unsigned char* ct,unsigned char* pt){
-// 	/* now decrypt.  NOTE: in counter mode, encryption and decryption are
-// 	 * actually identical, so doing the above again would work.  Also
-// 	 * note that it is crucial to make sure IVs are not reused, though it
-// 	 * Won't be an issue for our hybrid scheme as AES keys are only used
-// 	 * once.  */
-// 	/* wipe out plaintext to be sure it worked: */
-// 	memset(pt,0,512);
-// 	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-// 	if (1!=EVP_DecryptInit_ex(ctx,EVP_aes_256_ctr(),0,aes_key,iv))
-// 		ERR_print_errors_fp(stderr);
-// 	int nWritten;
-// 	size_t ctLen = nWritten;
-// 	if (1!=EVP_DecryptUpdate(ctx,pt,&nWritten,ct,ctLen))
-// 		ERR_print_errors_fp(stderr);
-// 	printf("decrypted %i bytes:\n%s\n",nWritten,pt);
-// 	/* NOTE: counter mode will preserve the length (although the person
-// 	 * decrypting needs to know the IV) */
-// }
+void aes_decrypt(unsigned char* aes_key, unsigned char* iv, unsigned char* ct,unsigned char* pt, int nWritten){
+	/* now decrypt.  NOTE: in counter mode, encryption and decryption are
+	 * actually identical, so doing the above again would work.  Also
+	 * note that it is crucial to make sure IVs are not reused, though it
+	 * Won't be an issue for our hybrid scheme as AES keys are only used
+	 * once.  */
+	/* wipe out plaintext to be sure it worked: */
+	memset(pt,0,512);
+	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+	if (1!=EVP_DecryptInit_ex(ctx,EVP_aes_256_ctr(),0,aes_key,iv))
+		ERR_print_errors_fp(stderr);
+	size_t ctLen = nWritten;
+	if (1!=EVP_DecryptUpdate(ctx,pt,&nWritten,ct,ctLen))
+		ERR_print_errors_fp(stderr);
+	printf("decrypted %i bytes:\n%s\n",nWritten,pt);
+	/* NOTE: counter mode will preserve the length (although the person
+	 * decrypting needs to know the IV) */
+}
 
 
 int main()
@@ -90,7 +90,7 @@ int main()
 		// cout <<  iv[i];
 	}
 	// cout << "16 byte IV: " << iv << endl;
-	/* NOTE: in general you need t compute the sizes of these
+	/* NOTE: in general you need to compute the sizes of these
 	 * buffers.  512 is an arbitrary value larger than what we
 	 * will need for our short message. */
 	unsigned char ct[512];
@@ -101,9 +101,9 @@ int main()
 	string message = "THIS IS A TEST FOR AES!";
 
 	// aes_encrypt(message, aes_key, iv, ct, pt);
-	unsigned char* encrypted_msg = aes_encrypt(message, aes_key, iv, ct, pt);
-	cout << "Encrypted Message " <<  encrypted_msg << endl;
-	// aes_decrypt(aes_key, iv, ct, pt);
+	int nWritten = aes_encrypt(message, aes_key, iv, ct, pt);
+	cout << "nWritten: " <<  nWritten << endl;
+	aes_decrypt(aes_key, iv, ct, pt, nWritten);
 
 	return 0;
 }

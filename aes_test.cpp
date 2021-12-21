@@ -177,10 +177,8 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b){
 
 
 	// Generate Public Key
-	unsigned int A;
 	ZZ ZZ_A;
-	ZZ_A = power(g, conv<uint>(ZZ_a));
-	A = conv<uint>(ZZ_A);
+	ZZ_A = power(g, conv<uint>(ZZ_a)) % p;
 
 	// Now we encrypt, E_pk(x) = (B, s * x)
 	// Where s is the shared secret
@@ -188,7 +186,7 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b){
 	// Generate the shared secret
 	
 	ZZ ZZ_s;
-	ZZ_s = power(ZZ_A, conv<uint>(ZZ_b));
+	ZZ_s = power(ZZ_A, conv<uint>(ZZ_b)) % p;
 	ZZ_s = ZZ_s * ZZ_x;
 
 	return conv<uint>(ZZ_s);
@@ -225,7 +223,7 @@ int main()
 	
 	// Generate B, using b.
 	// May run out of memory here!
-	ZZ ZZ_B = power(g, conv<uint>(ZZ_b));
+	ZZ ZZ_B = power(g, conv<uint>(ZZ_b)) % p;
 	
 	unsigned int E_Pk_x;
 	E_Pk_x = el_gamal_encrypt(ZZ_x,ZZ_b);

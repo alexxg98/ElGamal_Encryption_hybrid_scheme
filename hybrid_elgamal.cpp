@@ -4,6 +4,7 @@
  * Terminal command using the 2 libraries:
  * g++ -g -O2 -std=c++11 -pthread -march=native foo.cpp -o foo -lntl -lgmp -lm -L/usr/local/lib/ -lssl -lcrypto
  *
+ * For branch "elgamal_and_hash":
  * g++ -g -O2 -std=c++11 foo.cpp -o foo -lssl -lcrypto -lntl -pthread -lgmp
  *
  * This is the c++ version of the examples.c
@@ -181,7 +182,7 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b)
 	
 	unsigned int p_convert;
 	p_convert = conv<uint>(p);
-	cout << "p converted = " << p_convert << endl;
+	//cout << "p converted = " << p_convert << endl;
 	ZZ_a = conv<ZZ>(RandomBnd(p_convert));
 
 
@@ -214,13 +215,16 @@ unsigned int el_gamal_decrypt(unsigned int h, ZZ ZZ_B)
 
 
 // This is just hash function SHA-256 on value x
-// Courtesy of Chromium-boringssl-docs on SHA-256
 int h(ZZ ZZ_x){
 
 	/* hash: */
+	
+	/*
 	cout << "Size of x = " << sizeof(ZZ_x) << endl;
-
 	size_t len = sizeof(ZZ_x);
+
+	// Courtesy of Chromium-boringssl-docs on SHA-256
+	
 	uint8_t out[SHA256_DIGEST_LENGTH];
 
 	OPENSSL_EXPORT int SHA256_Init(SHA256_CTX *sha);
@@ -232,6 +236,23 @@ int h(ZZ ZZ_x){
 
 	cout << "H(x) = " << out[SHA256_DIGEST_LENGTH] << endl;
 
+	*/
+
+	/* hash a string with sha256 */
+	int random_x_int = conv<int>(ZZ_x);
+	string random_x_str = to_string(random_x_int);
+	char const* random_X = random_x_str.c_str();
+	unsigned char hash[32];
+	SHA256((unsigned char*)random_X,sizeof(random_X),hash);
+	for (size_t i = 0; i < 32; i++) {
+		printf("%02x",hash[i]);
+	}
+	printf("\n");
+
+	cout << "SHA256, H(x) = " << hash << endl;
+	cout << "Done with hash sha256" << endl;
+	/* you can check that this is correct by running
+	 * $ echo -n 'this is a test message :D' | sha256sum */
 
 	return 0;
 }
@@ -256,7 +277,7 @@ int main()
 	// Generate random b, we need b later for decryption
 
 	unsigned int p_convert = conv<uint>(p);
-	cout << "p converted = " << p_convert << endl;
+	//cout << "p converted = " << p_convert << endl;
 	ZZ ZZ_b = conv<ZZ>(RandomBnd(p_convert));
 	
 	// Generate B, using b.

@@ -22,6 +22,10 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+
+#define SHA256_CBLOCK 64
+#define SHA256_DIGEST_LENGTH 32
+
 using namespace std;
 using namespace NTL;
 
@@ -90,7 +94,7 @@ int readParams()
 }
 
 
-/* Use later for initialization of NTL's internal RNG.
+/* Use for initialization of NTL's internal RNG.
 void initNTLRandom()
 {
         FILE* frand = fopen("/dev/urandom","rb");
@@ -199,6 +203,7 @@ unsigned int el_gamal_encrypt(ZZ ZZ_x, ZZ ZZ_b)
 
 unsigned int el_gamal_decrypt(unsigned int h, ZZ ZZ_B) 
 {
+	cout << "EL GAMAL DECRYPTING ... " << endl; 
 	unsigned int decrypted_x;
 	ZZ ZZ_s;
 	ZZ_s = power(ZZ_B, conv<uint>(ZZ_a));
@@ -211,6 +216,29 @@ unsigned int el_gamal_decrypt(unsigned int h, ZZ ZZ_B)
 // This is just hash function SHA-256 on value x
 int h(ZZ ZZ_x){
 
+	/* hash: */
+	cout << "Size of x = " << sizeof(ZZ_x) << endl;
+
+	size_t len = sizeof(ZZ_x);
+	uint8_t out[SHA256_DIGEST_LENGTH];
+
+	OPENSSL_EXPORT int SHA256_Init(SHA256_CTX *sha);
+	OPENSSL_EXPORT int SHA256_Update(SHA256_CTX *sha, const void *ZZ_x, size_t len);
+	OPENSSL_EXPORT int SHA256_Final(uint8_t out[SHA256_DIGEST_LENGTH], SHA256_CTX *sha);
+	OPENSSL_EXPORT uint8_t *SHA256(const uint8_t *ZZ_x, size_t len, uint8_t out[SHA256_DIGEST_LENGTH]);
+
+	cout << "H(x) = " << out[SHA256_DIGEST_LENGTH] << endl;
+
+	 * Encrypt:
+	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+	if (1!=EVP_EncryptInit_ex(ctx,EVP_aes_256_ctr(),0,aes_key,iv))
+		ERR_print_errors_fp(stderr);
+	int nWritten;*/ /* stores number of written bytes (size of ciphertext) */
+	/*
+	if (1!=EVP_EncryptUpdate(ctx,ct,&nWritten,(unsigned char*)message_array,len))
+		ERR_print_errors_fp(stderr);
+	EVP_CIPHER_CTX_free(ctx);
+	*/
 	return 0;
 }
 
